@@ -16,6 +16,8 @@ router.get('/', function(req, res, next) {
 });
 
 
+
+
 /* Creation d'un post */
 router.post('/', function(req, res, next) {
   // Ajouter un post
@@ -43,11 +45,26 @@ router.post('/', function(req, res, next) {
 
 /* Obtenir un post en fonction de son ID */
 router.get('/:id', function(req, res, next) {
+  if (req.params.id.length != 24) {
+    next();
+  }
   mongo.getInstance().collection('posts').find({_id: ObjectId( req.params.id )},).toArray(function(err, result) {
     if (err) throw err;
     else {
       res.send({ok: true, result})
     }
+  });
+});
+
+//TO DO
+/* GET posts avec sub  sans les commentaires listing. */
+router.get('/:sub', function(req, res, next) {
+  // pour les post ou parent id n'existe pas
+  mongo.getInstance().collection('posts').find({sub: req.params.sub }).toArray(function(err, result) {
+    if (err) throw err;
+    
+    console.log(result);
+    res.send({ok: true, result})
   });
 });
 
@@ -108,7 +125,7 @@ router.delete('/:id', function(req, res, next) {
         res.send({ok:true, result : result});
     }
   });      
-  });
+});
   
 
 module.exports = router;
